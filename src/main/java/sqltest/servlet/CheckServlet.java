@@ -5,6 +5,7 @@ import sqltest.service.IOrderService;
 import sqltest.service.IUserService;
 import sqltest.service.OrderServiceImpl;
 import sqltest.service.UserServiceImpl;
+import sqltest.util.JDBCUtils;
 import sqltest.util.SQLValidator;
 
 import javax.servlet.ServletException;
@@ -32,6 +33,7 @@ public class CheckServlet extends HttpServlet {
         int count;
 
         try {
+            
             Class.forName("com.mysql.cj.jdbc.Driver");
             String url="jdbc:mysql://127.0.0.1:3306/sqltest";
             String username="root";
@@ -49,12 +51,13 @@ public class CheckServlet extends HttpServlet {
                 oneQuestions.setAnswer(rs.getString("answer"));
             }
             req.setAttribute("oneQuestions",oneQuestions);
+
             if(!SQLValidator.validateSQL(userSql)){
+                System.out.println("sql语句有误");
                 req.setAttribute("result","sql语句有误");
                 HttpSession session = req.getSession();
                 req.setAttribute("oneQuestions",oneQuestions);
                 req.setAttribute("userSql",userSql);
-
 
                 sql="SELECT * FROM sqltest.student ";
                 rs = stmt.executeQuery(sql);
@@ -107,8 +110,8 @@ public class CheckServlet extends HttpServlet {
                 req.setAttribute("scoreList",scoreList);
 
 
-
                 req.getRequestDispatcher("WEB-INF/answer.jsp").forward(req,resp);
+                return;
             }
 
             ArrayList<String> answerList=new ArrayList<String>();
@@ -150,12 +153,13 @@ public class CheckServlet extends HttpServlet {
             }else {
                 flag=false;
             }
+
             if(flag){
-                sql="insert into sqltest.order(uid,qid,time) values(?,?,?)";
+                sql="insert into sqltest.order(uid,qid,time)values(?,?,?)";
                 ps=conn.prepareStatement(sql);
-                ps.setString(1,userId);
-                ps.setString(2,oneQuestionId);
-                ps.setString(3,"100");
+                ps.setInt(1,new Integer(userId));
+                ps.setInt(2,new Integer(oneQuestionId));
+                ps.setInt(3,100);
                 ps.executeUpdate();
 
                 req.setAttribute("result","正确");
@@ -231,13 +235,6 @@ public class CheckServlet extends HttpServlet {
 
                 System.out.println(s);
             }*/
-
-
-
-
-
-
-
 
             req.getRequestDispatcher("WEB-INF/answer.jsp").forward(req,resp);
 

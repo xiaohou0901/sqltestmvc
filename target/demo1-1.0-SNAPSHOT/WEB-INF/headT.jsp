@@ -25,4 +25,5 @@
 <a href="toRecordAll-servlet?userId=${user.getId()}">查看做题记录</a><br>
 <a href="toUpdate-servlet">更新问题</a>
 </body>
+
 </html>
